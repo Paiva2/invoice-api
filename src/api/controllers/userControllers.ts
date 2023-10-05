@@ -18,7 +18,8 @@ export default class UserControllers {
       })
 
       return res.status(201).send()
-    } catch {
+    } catch (e) {
+      console.log(e)
       return res.status(500).send()
     }
   }

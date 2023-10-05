@@ -13,4 +13,13 @@ export default class PostgresUsersRepository implements UserRepository {
 
     return newUser.rows[0]
   }
+
+  async findUnique(username: string) {
+    const findUser = await pool.query<User>(
+      "SELECT * from users WHERE username = $1",
+      [username]
+    )
+
+    return findUser.rows[0]
+  }
 }
