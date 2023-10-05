@@ -21,6 +21,8 @@ export default class UserRegisterServices {
   }: UserRegisterServicesRequest): Promise<UserRegisterServicesResponse> {
     if (!username || !password) {
       throw new Error("You must provide username and password to register.")
+    } else if (password.length < 6) {
+      throw new Error("Password must have at least 6 characters.")
     }
 
     const isThisUserRegistered = await this.userRepository.findUnique(username)
