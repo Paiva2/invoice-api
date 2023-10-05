@@ -1,9 +1,9 @@
+import userRoutes from "./api/routes/userRoutes"
 import app from "./app"
 import env from "./env/env"
+import pool from "./pgclient"
 
-app.get("/", (req, res) => {
-  return res.status(200).send("Working")
-})
+userRoutes(app)
 
 const server = app.listen(3000, () => {
   console.log(`Running on port ${env.PORT}`)
