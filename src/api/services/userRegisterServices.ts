@@ -9,7 +9,7 @@ interface UserRegisterServicesRequest {
 }
 
 interface UserRegisterServicesResponse {
-  newUser: User | QueryResult<User>
+  newUser: /* User | QueryResult<User> */ any
 }
 
 export default class UserRegisterServices {
@@ -18,7 +18,7 @@ export default class UserRegisterServices {
   async execute({
     username,
     password,
-  }: UserRegisterServicesRequest): Promise<UserRegisterServicesResponse> {
+  }: UserRegisterServicesRequest): /* Promise<UserRegisterServicesResponse> */ Promise<any> {
     if (!username || !password) {
       throw new Error("You must provide username and password to register.")
     } else if (password.length < 6) {

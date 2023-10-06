@@ -43,7 +43,7 @@ describe("User Register Services", () => {
         username: "user test",
         password: "12345",
       })
-    }).rejects.toThrowError("Password must have at least 6 characters")
+    }).rejects.toThrowError("Password must have at least 6 characters.")
   })
 
   it("should throw an error if username already exists", async () => {
