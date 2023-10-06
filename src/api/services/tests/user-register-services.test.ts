@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest"
-import UserRegisterServices from "../userRegisterServices"
+import UserRegisterServices from "../user/userRegisterServices"
 import UserServicesMemory from "../../in-memory/users-services-memory"
 
 let userRegisterServices: UserRegisterServices

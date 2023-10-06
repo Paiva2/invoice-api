@@ -8,7 +8,7 @@ describe("User Register Controller", () => {
     server = app.listen(3004, () => console.log("Server running for tests"))
   })
 
-  afterAll(() => {
+  afterAll(async () => {
     server.close()
   })
 

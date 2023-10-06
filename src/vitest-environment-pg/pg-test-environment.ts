@@ -9,14 +9,12 @@ export default <Environment>{
     await pool.query("CREATE SCHEMA IF NOT EXISTS public")
 
     await pool.query(
-      "CREATE TABLE public.users(id SERIAL PRIMARY KEY, username VARCHAR(100), hashed_password VARCHAR(100))"
+      "CREATE TABLE IF NOT EXISTS public.users(id SERIAL PRIMARY KEY, username VARCHAR(100), hashed_password VARCHAR(100))"
     )
 
     return {
       async teardown() {
         await pool.query("DROP SCHEMA public CASCADE")
-
-        await pool.end()
       },
     }
   },
