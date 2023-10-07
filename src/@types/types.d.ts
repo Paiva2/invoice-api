@@ -2,7 +2,7 @@ export type NewUser = {
   username: string
   password: string
   email: string
-  total_balance: string
+  total_balance?: string
 }
 
 export type User = {

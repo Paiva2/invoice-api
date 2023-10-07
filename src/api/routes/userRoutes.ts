@@ -21,4 +21,10 @@ export default function userRoutes(app: Express) {
   )
 
   app.get("/profile", jwtSignChecker, userControllers.getUserProfileController)
+
+  app.patch(
+    "/profile",
+    [jwtSignChecker, bodyValidityChecker],
+    userControllers.updateUserProfileController
+  )
 }

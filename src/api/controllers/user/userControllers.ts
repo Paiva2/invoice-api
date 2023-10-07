@@ -6,13 +6,15 @@ import jwt from "jsonwebtoken"
 import env from "../../../env/env"
 import UserChangePasswordServices from "../../services/user/userChangePasswordServices"
 import GetUserProfileServices from "../../services/user/getUserProfileServices"
-import { JwtSchema } from "../../../@types/types"
+import UpdateUserProfileServices from "../../services/user/updateUserProfileServices"
+import retrieveJwt from "../../utils/retrieveJwt"
+
+const postgresUsersRepository = new PostgresUsersRepository()
 
 export default class UserControllers {
   async userRegisterController(req: Request, res: Response) {
     const { username, email, password } = req.body
 
-    const postgresUsersRepository = new PostgresUsersRepository()
     const userRegisterServices = new UserRegisterServices(
       postgresUsersRepository
     )
@@ -35,7 +37,6 @@ export default class UserControllers {
   async userLoginController(req: Request, res: Response) {
     const { email, password } = req.body
 
-    const postgresUsersRepository = new PostgresUsersRepository()
     const userRegisterServices = new UserLoginServices(postgresUsersRepository)
 
     try {
@@ -74,9 +75,8 @@ export default class UserControllers {
   async userChangePasswordController(req: Request, res: Response) {
     const { email, newPassword } = req.body
 
-    const userRepository = new PostgresUsersRepository()
     const userChangePasswordServices = new UserChangePasswordServices(
-      userRepository
+      postgresUsersRepository
     )
 
     try {
@@ -99,7 +99,7 @@ export default class UserControllers {
     const userRepository = new PostgresUsersRepository()
     const userProfile = new GetUserProfileServices(userRepository)
 
-    const { auth } = jwt.decode(getJwt) as JwtSchema
+    const auth = retrieveJwt(getJwt)
 
     try {
       const { findUserProfile } = await userProfile.execute({
@@ -113,6 +113,31 @@ export default class UserControllers {
       }
 
       return res.status(200).send({ data: user })
+    } catch (e) {
+      if (e instanceof Error) {
+        return res.status(404).send({ message: e.message })
+      }
+    }
+  }
+
+  async updateUserProfileController(req: Request, res: Response) {
+    const { username, total_balance } = req.body
+    const getJwt = req.cookies["invoice-auth"]
+
+    const auth = retrieveJwt(getJwt)
+
+    const updateProfileServices = new UpdateUserProfileServices(
+      postgresUsersRepository
+    )
+
+    try {
+      const { updatedUser } = await updateProfileServices.execute({
+        username,
+        email: auth.email,
+        total_balance,
+      })
+
+      return res.status(200).send({ data: updatedUser })
     } catch (e) {
       if (e instanceof Error) {
         return res.status(404).send({ message: e.message })
