@@ -42,7 +42,7 @@ describe("User Register Controller", () => {
     })
 
     expect(newUser.statusCode).toEqual(409)
-    expect(newUser.body.message).toEqual("Username is already registered.")
+    expect(newUser.body.message).toEqual("E-mail is already registered.")
   })
 
   it("should throw an error if username or password are not provided.", async () => {
@@ -53,7 +53,7 @@ describe("User Register Controller", () => {
 
     expect(newUser.statusCode).toEqual(409)
     expect(newUser.body.message).toEqual(
-      "You must provide username and password to register."
+      "You must provide email, username and password to register."
     )
   })
 

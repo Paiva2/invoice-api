@@ -15,6 +15,7 @@ describe("User Auth Services", () => {
     userLoginServices = new UserLoginServices(userServicesMemory)
 
     await userRegisterServices.execute({
+      email: "test@test.com",
       username: "user test",
       password: "123456",
     })
@@ -22,7 +23,7 @@ describe("User Auth Services", () => {
 
   it("should be possible to auth if password and username matches", async () => {
     const authorizedUser = await userLoginServices.execute({
-      username: "user test",
+      email: "test@test.com",
       password: "123456",
     })
 
@@ -38,8 +39,8 @@ describe("User Auth Services", () => {
   it("should not be possible to auth if password and username dont matches", async () => {
     await expect(() => {
       return userLoginServices.execute({
-        username: "user test",
-        password: "1234567",
+        email: "test@test.com",
+        password: "non matching password",
       })
     }).rejects.toThrowError("Invalid credentials.")
   })
@@ -47,7 +48,7 @@ describe("User Auth Services", () => {
   it("should not be possible to auth if password or username are not provided", async () => {
     await expect(() => {
       return userLoginServices.execute({
-        username: "",
+        email: "test@test.com",
         password: "",
       })
     }).rejects.toThrowError("Invalid credentials.")
@@ -56,7 +57,7 @@ describe("User Auth Services", () => {
   it("should not be possible to auth if username are not found on database", async () => {
     await expect(() => {
       return userLoginServices.execute({
-        username: "inexistent user",
+        email: "inexistent@inexistent.com",
         password: "123456",
       })
     }).rejects.toThrowError("User not found.")

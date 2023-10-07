@@ -3,7 +3,7 @@ import { UserRepository } from "../../repositories/implementations/user-reposito
 import { compare } from "bcryptjs"
 
 interface UserLoginServicesRequest {
-  username: string
+  email: string
   password: string
 }
 
@@ -15,14 +15,14 @@ export default class UserLoginServices {
   constructor(private userRepository: UserRepository) {}
 
   async execute({
-    username,
+    email,
     password,
   }: UserLoginServicesRequest): Promise<UserLoginServicesResponse> {
-    if (!username || !password) {
+    if (!email || !password) {
       throw new Error("Invalid credentials.")
     }
 
-    const findUser = (await this.userRepository.findUnique(username)) as User
+    const findUser = (await this.userRepository.findUnique(email)) as User
 
     if (!findUser) {
       throw new Error("User not found.")

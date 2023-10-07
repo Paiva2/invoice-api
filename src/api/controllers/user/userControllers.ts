@@ -8,7 +8,7 @@ import UserChangePasswordServices from "../../services/user/userChangePasswordSe
 
 export default class UserControllers {
   async userRegisterController(req: Request, res: Response) {
-    const { username, password } = req.body
+    const { username, email, password } = req.body
 
     const postgresUsersRepository = new PostgresUsersRepository()
     const userRegisterServices = new UserRegisterServices(
@@ -17,6 +17,7 @@ export default class UserControllers {
 
     try {
       await userRegisterServices.execute({
+        email,
         username,
         password,
       })
@@ -30,14 +31,14 @@ export default class UserControllers {
   }
 
   async userLoginController(req: Request, res: Response) {
-    const { username, password } = req.body
+    const { email, password } = req.body
 
     const postgresUsersRepository = new PostgresUsersRepository()
     const userRegisterServices = new UserLoginServices(postgresUsersRepository)
 
     try {
       const user = await userRegisterServices.execute({
-        username,
+        email,
         password,
       })
 
@@ -70,7 +71,7 @@ export default class UserControllers {
   }
 
   async userChangePasswordController(req: Request, res: Response) {
-    const { username, newPassword } = req.body
+    const { email, newPassword } = req.body
 
     const userRepository = new PostgresUsersRepository()
     const userChangePasswordServices = new UserChangePasswordServices(
@@ -79,7 +80,7 @@ export default class UserControllers {
 
     try {
       await userChangePasswordServices.execute({
-        username,
+        email,
         newPassword,
       })
 

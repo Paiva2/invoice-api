@@ -18,6 +18,7 @@ describe("User Change Password Services", () => {
     )
 
     await userRegisterServices.execute({
+      email: "test@test.com",
       username: "user test",
       password: "123456",
     })
@@ -25,7 +26,7 @@ describe("User Change Password Services", () => {
 
   it("should be possible to change an user password", async () => {
     const { updatedUser } = await userChangePasswordServices.execute({
-      username: "user test",
+      email: "test@test.com",
       newPassword: "12345678910",
     })
 
@@ -38,6 +39,7 @@ describe("User Change Password Services", () => {
 
     expect(updatedUser).toEqual({
       id: expect.any(String),
+      email: expect.any(String),
       username: expect.any(String),
       hashed_password: expect.any(String),
     })
@@ -46,16 +48,16 @@ describe("User Change Password Services", () => {
   it("should not be possible to change an user password if user doesnt exists", async () => {
     await expect(() => {
       return userChangePasswordServices.execute({
-        username: "inexistent user",
+        email: "inexistent@inexistent.com",
         newPassword: "12345678910",
       })
     }).rejects.toThrowError("User not found.")
   })
 
-  it("should not be possible to change an user password if new password or username are not provided", async () => {
+  it("should not be possible to change an user password if new password or email are not provided", async () => {
     await expect(() => {
       return userChangePasswordServices.execute({
-        username: "",
+        email: "",
         newPassword: "",
       })
     }).rejects.toThrowError("Invalid credentials.")
@@ -64,7 +66,7 @@ describe("User Change Password Services", () => {
   it("should not be possible to change an user password if new password doenst have at least 6 characters", async () => {
     await expect(() => {
       return userChangePasswordServices.execute({
-        username: "user test",
+        email: "user test",
         newPassword: "12345",
       })
     }).rejects.toThrowError("Password must have at least 6 characters.")

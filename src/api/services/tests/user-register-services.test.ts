@@ -13,6 +13,7 @@ describe("User Register Services", () => {
 
   it("should register a new user", async () => {
     const newUser = await userRegisterServices.execute({
+      email: "test@test.com",
       username: "user test",
       password: "123456",
     })
@@ -29,17 +30,19 @@ describe("User Register Services", () => {
   it("should throw an error if password or username are not provided", async () => {
     await expect(() => {
       return userRegisterServices.execute({
+        email: "test@test.com",
         username: "",
         password: "",
       })
     }).rejects.toThrowError(
-      "You must provide username and password to register."
+      "You must provide email, username and password to register."
     )
   })
 
   it("should throw an error if password hasnt at least 6 characters", async () => {
     await expect(() => {
       return userRegisterServices.execute({
+        email: "test@test.com",
         username: "user test",
         password: "12345",
       })
@@ -48,15 +51,17 @@ describe("User Register Services", () => {
 
   it("should throw an error if username already exists", async () => {
     await userRegisterServices.execute({
+      email: "test@test.com",
       username: "user test",
       password: "123456",
     })
 
     await expect(() => {
       return userRegisterServices.execute({
+        email: "test@test.com",
         username: "user test",
         password: "123456",
       })
-    }).rejects.toThrowError("Username is already registered.")
+    }).rejects.toThrowError("E-mail is already registered.")
   })
 })

@@ -4,6 +4,7 @@ import { UserRepository } from "../../repositories/implementations/user-reposito
 import { hash } from "bcryptjs"
 
 interface UserRegisterServicesRequest {
+  email: string
   username: string
   password: string
 }
@@ -16,26 +17,30 @@ export default class UserRegisterServices {
   constructor(private userRepository: UserRepository) {}
 
   async execute({
+    email,
     username,
     password,
   }: UserRegisterServicesRequest): Promise<UserRegisterServicesResponse> {
-    if (!username || !password) {
-      throw new Error("You must provide username and password to register.")
+    if (!email || !password || !username) {
+      throw new Error(
+        "You must provide email, username and password to register."
+      )
     } else if (password.length < 6) {
       throw new Error("Password must have at least 6 characters.")
     }
 
-    const isThisUserRegistered = await this.userRepository.findUnique(username)
+    const isThisUserRegistered = await this.userRepository.findUnique(email)
 
     if (isThisUserRegistered) {
-      throw new Error("Username is already registered.")
+      throw new Error("E-mail is already registered.")
     }
 
     const hashPassword = await hash(password, 6)
 
     const newUser = await this.userRepository.create({
-      password: hashPassword,
+      email,
       username,
+      password: hashPassword,
     })
 
     return { newUser }
