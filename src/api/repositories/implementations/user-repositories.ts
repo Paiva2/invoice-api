@@ -6,4 +6,8 @@ export interface UserRepository {
   findUnique(
     username: string
   ): Promise<User | null> | Promise<QueryResult<User>>
+  updatePassword(
+    username: string,
+    newPassword: string
+  ): Promise<User | null> | Promise<QueryResult<User>>
 }

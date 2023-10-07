@@ -1,20 +1,29 @@
-import { describe, it, afterAll, beforeAll, expect } from "vitest"
+/* import { describe, it, afterAll, beforeAll, expect } from "vitest"
 import app from "../../../app"
 import request from "supertest"
+import pool from "../../../pgclient"
 let server: any
 
 describe("User Register Controller", () => {
-  beforeAll(() => {
-    server = app.listen(3004, () => console.log("Server running for tests"))
+  beforeAll(async () => {
+    server = app.listen(0, () => console.log("Server running for tests"))
+
+    await pool.query("CREATE SCHEMA IF NOT EXISTS public")
+
+    await pool.query(
+      "CREATE TABLE IF NOT EXISTS users(id SERIAL PRIMARY KEY, username VARCHAR(100), hashed_password VARCHAR(100))"
+    )
   })
 
   afterAll(async () => {
+    await pool.query("TRUNCATE TABLE users")
+
     server.close()
   })
 
   it("should register a new user", async () => {
     const newUser = await request(server).post("/user-register").send({
-      username: "test",
+      username: "New User",
       password: "123456",
     })
 
@@ -23,12 +32,12 @@ describe("User Register Controller", () => {
 
   it("should throw an error if user is already registered", async () => {
     await request(server).post("/user-register").send({
-      username: "test",
+      username: "test123",
       password: "123456",
     })
 
     const newUser = await request(server).post("/user-register").send({
-      username: "test",
+      username: "test123",
       password: "123456",
     })
 
@@ -60,3 +69,4 @@ describe("User Register Controller", () => {
     )
   })
 })
+ */

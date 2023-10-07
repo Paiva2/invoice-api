@@ -1,3 +1,4 @@
+import { QueryResult } from "pg"
 import { User, NewUser } from "../../../@types/types"
 import pool from "../../../pgclient"
 import { UserRepository } from "../implementations/user-repositories"
@@ -16,10 +17,14 @@ export default class PostgresUsersRepository implements UserRepository {
 
   async findUnique(username: string) {
     const findUser = await pool.query<User>(
-      "SELECT * from users WHERE username = $1",
+      "SELECT * FROM users WHERE username = $1",
       [username]
     )
 
     return findUser.rows[0]
+  }
+
+  async updatePassword(username: string, newPassword: string) {
+    return null
   }
 }

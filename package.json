@@ -8,9 +8,10 @@
     "build": "yarn tsc",
     "test": "vitest run --dir src/api/services/tests",
     "test:watch": "vitest --dir src/api/services/tests",
-    "test:create-pg-environment": "npm link vitest-environment-pg",
+    "test:create-compose-test": "concurrently \"cd ./src/vitest-environment-pg && docker-compose up -d\"",
+    "test:create-pg-environment": "npm link cd src cd vitest-environment-pg",
     "test:install-pg-environment": "npm link vitest-environment-pg",
-    "pretest:e2e": "run-s test:create-pg-environment test:install-pg-environment",
+    "pretest:e2e": "run-s test:create-compose-test test:create-pg-environment test:install-pg-environment",
     "test:e2e": "vitest run --dir src/api/controllers/tests"
   },
   "keywords": [],
@@ -19,6 +20,7 @@
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.2",
+    "concurrently": "^8.2.1",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",

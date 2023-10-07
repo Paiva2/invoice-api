@@ -61,6 +61,7 @@ export default class UserControllers {
         )
         .send()
     } catch (e) {
+      console.log(e)
       if (e instanceof Error) {
         return res.status(403).send({ message: e.message })
       }

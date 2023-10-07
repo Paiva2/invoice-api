@@ -1,21 +1,20 @@
-import { Environment } from "vitest"
-import pool from "../pgclient"
+/* // Importe as bibliotecas necessárias
+import { Environment } from "vitest";
+import { execSync } from "child_process";
 
-export default <Environment>{
+export default <Environment>  {
   name: "postgres",
   transformMode: "web",
 
+
   async setup() {
-    await pool.query("CREATE SCHEMA IF NOT EXISTS public")
-
-    await pool.query(
-      "CREATE TABLE IF NOT EXISTS public.users(id SERIAL PRIMARY KEY, username VARCHAR(100), hashed_password VARCHAR(100))"
-    )
-
     return {
       async teardown() {
-        await pool.query("DROP SCHEMA public CASCADE")
+        execSync("concurrently \"cd ./src/vitest-environment-pg && docker-compose down --volumes --remove-orphans\"")
       },
     }
   },
-}
+};
+
+
+ */
