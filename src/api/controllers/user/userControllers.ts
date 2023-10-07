@@ -4,6 +4,7 @@ import UserRegisterServices from "../../services/user/userRegisterServices"
 import UserLoginServices from "../../services/user/userLoginServices"
 import jwt from "jsonwebtoken"
 import env from "../../../env/env"
+import UserChangePasswordServices from "../../services/user/userChangePasswordServices"
 
 export default class UserControllers {
   async userRegisterController(req: Request, res: Response) {
@@ -62,6 +63,28 @@ export default class UserControllers {
         .send()
     } catch (e) {
       console.log(e)
+      if (e instanceof Error) {
+        return res.status(403).send({ message: e.message })
+      }
+    }
+  }
+
+  async userChangePasswordController(req: Request, res: Response) {
+    const { username, newPassword } = req.body
+
+    const userRepository = new PostgresUsersRepository()
+    const userChangePasswordServices = new UserChangePasswordServices(
+      userRepository
+    )
+
+    try {
+      await userChangePasswordServices.execute({
+        username,
+        newPassword,
+      })
+
+      return res.status(200).send()
+    } catch (e) {
       if (e instanceof Error) {
         return res.status(403).send({ message: e.message })
       }

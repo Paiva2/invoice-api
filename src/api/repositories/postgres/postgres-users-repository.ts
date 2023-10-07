@@ -25,6 +25,11 @@ export default class PostgresUsersRepository implements UserRepository {
   }
 
   async updatePassword(username: string, newPassword: string) {
-    return null
+    const updatedUser = await pool.query<User>(
+      "UPDATE users SET hashed_password = $1 WHERE username = $2 RETURNING *",
+      [newPassword, username]
+    )
+
+    return updatedUser.rows[0]
   }
 }

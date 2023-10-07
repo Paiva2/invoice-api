@@ -7,4 +7,6 @@ export default function userRoutes(app: Express) {
   app.post("/user-register", userControllers.userRegisterController)
 
   app.post("/login", userControllers.userLoginController)
+
+  app.patch("/change-credentials", userControllers.userChangePasswordController)
 }
