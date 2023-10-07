@@ -5,6 +5,8 @@ import UserLoginServices from "../../services/user/userLoginServices"
 import jwt from "jsonwebtoken"
 import env from "../../../env/env"
 import UserChangePasswordServices from "../../services/user/userChangePasswordServices"
+import GetUserProfileServices from "../../services/user/getUserProfileServices"
+import { JwtSchema } from "../../../@types/types"
 
 export default class UserControllers {
   async userRegisterController(req: Request, res: Response) {
@@ -48,7 +50,7 @@ export default class UserControllers {
         {
           auth: {
             id: user.findUser.id,
-            username: user.findUser.username,
+            email: user.findUser.email,
           },
         },
         env.JWT_KEY as string,
@@ -59,11 +61,10 @@ export default class UserControllers {
         .status(200)
         .setHeader(
           "Set-Cookie",
-          `invoice-auth=${jwtToken}; HttpOnly; Path=/; Max-Age=${jwtExpiration}`
+          `invoice-auth=${jwtToken}; HttpOnly; Path=/; Max-Age=${jwtExpiration}; Expires=${jwtExpiration}`
         )
         .send()
     } catch (e) {
-      console.log(e)
       if (e instanceof Error) {
         return res.status(403).send({ message: e.message })
       }
@@ -88,6 +89,33 @@ export default class UserControllers {
     } catch (e) {
       if (e instanceof Error) {
         return res.status(403).send({ message: e.message })
+      }
+    }
+  }
+
+  async getUserProfileController(req: Request, res: Response) {
+    const getJwt = req.cookies["invoice-auth"]
+
+    const userRepository = new PostgresUsersRepository()
+    const userProfile = new GetUserProfileServices(userRepository)
+
+    const { auth } = jwt.decode(getJwt) as JwtSchema
+
+    try {
+      const { findUserProfile } = await userProfile.execute({
+        email: auth.email,
+      })
+
+      const user = {
+        email: findUserProfile.email,
+        username: findUserProfile.username,
+        totaBalance: findUserProfile.total_balance,
+      }
+
+      return res.status(200).send({ data: user })
+    } catch (e) {
+      if (e instanceof Error) {
+        return res.status(404).send({ message: e.message })
       }
     }
   }
