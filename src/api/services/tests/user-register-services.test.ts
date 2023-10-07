@@ -2,17 +2,17 @@ import { describe, it, expect, beforeEach } from "vitest"
 import UserRegisterServices from "../user/userRegisterServices"
 import UserServicesMemory from "../../in-memory/users-services-memory"
 
-let userRegisterServices: UserRegisterServices
+let sut: UserRegisterServices
 let userServicesMemory: UserServicesMemory
 
 describe("User Register Services", () => {
   beforeEach(() => {
     userServicesMemory = new UserServicesMemory()
-    userRegisterServices = new UserRegisterServices(userServicesMemory)
+    sut = new UserRegisterServices(userServicesMemory)
   })
 
   it("should register a new user", async () => {
-    const newUser = await userRegisterServices.execute({
+    const newUser = await sut.execute({
       email: "test@test.com",
       username: "user test",
       password: "123456",
@@ -29,7 +29,7 @@ describe("User Register Services", () => {
 
   it("should throw an error if password or username are not provided", async () => {
     await expect(() => {
-      return userRegisterServices.execute({
+      return sut.execute({
         email: "test@test.com",
         username: "",
         password: "",
@@ -41,7 +41,7 @@ describe("User Register Services", () => {
 
   it("should throw an error if password hasnt at least 6 characters", async () => {
     await expect(() => {
-      return userRegisterServices.execute({
+      return sut.execute({
         email: "test@test.com",
         username: "user test",
         password: "12345",
@@ -50,14 +50,14 @@ describe("User Register Services", () => {
   })
 
   it("should throw an error if username already exists", async () => {
-    await userRegisterServices.execute({
+    await sut.execute({
       email: "test@test.com",
       username: "user test",
       password: "123456",
     })
 
     await expect(() => {
-      return userRegisterServices.execute({
+      return sut.execute({
         email: "test@test.com",
         username: "user test",
         password: "123456",

@@ -5,14 +5,14 @@ import UserLoginServices from "../user/userLoginServices"
 
 let userRegisterServices: UserRegisterServices
 let userServicesMemory: UserServicesMemory
-let userLoginServices: UserLoginServices
+let sut: UserLoginServices
 
 describe("User Auth Services", () => {
   beforeEach(async () => {
     userServicesMemory = new UserServicesMemory()
 
     userRegisterServices = new UserRegisterServices(userServicesMemory)
-    userLoginServices = new UserLoginServices(userServicesMemory)
+    sut = new UserLoginServices(userServicesMemory)
 
     await userRegisterServices.execute({
       email: "test@test.com",
@@ -22,7 +22,7 @@ describe("User Auth Services", () => {
   })
 
   it("should be possible to auth if password and username matches", async () => {
-    const authorizedUser = await userLoginServices.execute({
+    const authorizedUser = await sut.execute({
       email: "test@test.com",
       password: "123456",
     })
@@ -38,7 +38,7 @@ describe("User Auth Services", () => {
 
   it("should not be possible to auth if password and username dont matches", async () => {
     await expect(() => {
-      return userLoginServices.execute({
+      return sut.execute({
         email: "test@test.com",
         password: "non matching password",
       })
@@ -47,7 +47,7 @@ describe("User Auth Services", () => {
 
   it("should not be possible to auth if password or username are not provided", async () => {
     await expect(() => {
-      return userLoginServices.execute({
+      return sut.execute({
         email: "test@test.com",
         password: "",
       })
@@ -56,7 +56,7 @@ describe("User Auth Services", () => {
 
   it("should not be possible to auth if username are not found on database", async () => {
     await expect(() => {
-      return userLoginServices.execute({
+      return sut.execute({
         email: "inexistent@inexistent.com",
         password: "123456",
       })

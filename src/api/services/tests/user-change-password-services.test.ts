@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, beforeAll } from "vitest"
+import { describe, it, expect, beforeEach } from "vitest"
 import UserRegisterServices from "../user/userRegisterServices"
 import UserServicesMemory from "../../in-memory/users-services-memory"
 import UserChangePasswordServices from "../user/userChangePasswordServices"
@@ -6,16 +6,14 @@ import { compare } from "bcryptjs"
 
 let userRegisterServices: UserRegisterServices
 let userServicesMemory: UserServicesMemory
-let userChangePasswordServices: UserChangePasswordServices
+let sut: UserChangePasswordServices
 
 describe("User Change Password Services", () => {
   beforeEach(async () => {
     userServicesMemory = new UserServicesMemory()
     userRegisterServices = new UserRegisterServices(userServicesMemory)
 
-    userChangePasswordServices = new UserChangePasswordServices(
-      userServicesMemory
-    )
+    sut = new UserChangePasswordServices(userServicesMemory)
 
     await userRegisterServices.execute({
       email: "test@test.com",
@@ -25,7 +23,7 @@ describe("User Change Password Services", () => {
   })
 
   it("should be possible to change an user password", async () => {
-    const { updatedUser } = await userChangePasswordServices.execute({
+    const { updatedUser } = await sut.execute({
       email: "test@test.com",
       newPassword: "12345678910",
     })
@@ -47,7 +45,7 @@ describe("User Change Password Services", () => {
 
   it("should not be possible to change an user password if user doesnt exists", async () => {
     await expect(() => {
-      return userChangePasswordServices.execute({
+      return sut.execute({
         email: "inexistent@inexistent.com",
         newPassword: "12345678910",
       })
@@ -56,7 +54,7 @@ describe("User Change Password Services", () => {
 
   it("should not be possible to change an user password if new password or email are not provided", async () => {
     await expect(() => {
-      return userChangePasswordServices.execute({
+      return sut.execute({
         email: "",
         newPassword: "",
       })
@@ -65,7 +63,7 @@ describe("User Change Password Services", () => {
 
   it("should not be possible to change an user password if new password doenst have at least 6 characters", async () => {
     await expect(() => {
-      return userChangePasswordServices.execute({
+      return sut.execute({
         email: "user test",
         newPassword: "12345",
       })
