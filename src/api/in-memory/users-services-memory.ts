@@ -1,10 +1,43 @@
 import { randomUUID } from "node:crypto"
 import { UserRepository } from "../repositories/implementations/user-repositories"
-import { NewUser, User } from "../../@types/types"
-import { QueryResult } from "pg"
+import { NewUser, UpdateUserProfileSchema, User } from "../../@types/types"
 
 export default class UserServicesMemory implements UserRepository {
   private users: User[] = []
+
+  async updateUserProfileInformations(data: UpdateUserProfileSchema) {
+    const { email, ...params } = data
+
+    let userUpdated: User = {} as User
+
+    const checkParametersToUpdate = Object.keys(params)
+
+    const findUser = this.users.find((user) => user.email === email)
+
+    if (!findUser) return null
+
+    for (let param of checkParametersToUpdate) {
+      if (data[param as keyof typeof data]) {
+        userUpdated = {
+          ...findUser,
+          ...userUpdated,
+          [param]: data[param as keyof typeof data],
+        }
+      }
+    }
+
+    const updateDb = this.users.map((user) => {
+      if (user.email === email) {
+        user = userUpdated
+      }
+
+      return user
+    })
+
+    this.users = updateDb
+
+    return userUpdated
+  }
 
   async updatePassword(email: string, newPassword: string) {
     let getUserUpdated: User | null = null
@@ -13,7 +46,9 @@ export default class UserServicesMemory implements UserRepository {
       if (user.email === email) {
         user.hashed_password = newPassword
 
-        return (getUserUpdated = user)
+        getUserUpdated = user
+
+        break
       }
     }
 
@@ -36,6 +71,7 @@ export default class UserServicesMemory implements UserRepository {
       email: data.email,
       username: data.username,
       hashed_password: data.password,
+      total_balance: "0",
     }
 
     this.users.push(newUser)

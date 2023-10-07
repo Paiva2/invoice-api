@@ -40,6 +40,7 @@ describe("User Change Password Services", () => {
       email: expect.any(String),
       username: expect.any(String),
       hashed_password: expect.any(String),
+      total_balance: expect.any(String),
     })
   })
 

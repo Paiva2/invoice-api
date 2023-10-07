@@ -2,6 +2,7 @@ export type NewUser = {
   username: string
   password: string
   email: string
+  total_balance: string
 }
 
 export type User = {
@@ -19,4 +20,10 @@ export type JwtSchema = {
   }
   iat: number
   exp: number
+}
+
+export type UpdateUserProfileSchema = {
+  email: string
+  username?: string
+  total_balance?: string
 }
