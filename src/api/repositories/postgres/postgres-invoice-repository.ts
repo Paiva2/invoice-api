@@ -35,10 +35,11 @@ export default class PostgresInvoiceRepository implements InvoiceRepository {
             city_to, 
             zipcode_to, 
             country_to,
-            invoice_date, 
+            invoice_date,
+            status, 
             fkinvoiceowner
         )
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
             RETURNING *;
       `,
       [
@@ -53,6 +54,7 @@ export default class PostgresInvoiceRepository implements InvoiceRepository {
         zipcode_to,
         country_to,
         invoice_date,
+        "pending",
         email,
       ]
     )
@@ -80,5 +82,32 @@ export default class PostgresInvoiceRepository implements InvoiceRepository {
       ...newInvoice.rows[0],
       item_list: getThisInvoiceItemList,
     }
+  }
+
+  async findUserInvoices(email: string) {
+    let formattedInvoicesWithItemList: InvoiceSchema[] = []
+
+    const invoiceRows = await pool.query<InvoiceSchema>(
+      `
+      SELECT * from invoice WHERE fkinvoiceowner = $1
+    `,
+      [email]
+    )
+
+    for (let invoice of invoiceRows.rows) {
+      const invoiceItemList = await pool.query<ItemList[]>(
+        `
+        SELECT * from item_list WHERE fkitemlistowner = $1
+      `,
+        [invoice.id]
+      )
+
+      formattedInvoicesWithItemList.push({
+        ...invoice,
+        item_list: invoiceItemList.rows,
+      })
+    }
+
+    return formattedInvoicesWithItemList
   }
 }

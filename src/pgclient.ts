@@ -22,6 +22,7 @@ async function initDatabase() {
     users(id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
       email VARCHAR(100) UNIQUE,
       username varchar(100),
+      total_balance bigint default(0),
       hashed_password VARCHAR(100))
     `
     )
@@ -32,6 +33,7 @@ async function initDatabase() {
         street_from varchar(100),
         city_from varchar(50),
         zipcode_from varchar(30),
+        status varchar(10),
         country_from varchar(50),
         name_to varchar(50),
         email_to varchar(50),

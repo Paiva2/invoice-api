@@ -11,7 +11,7 @@ export type User = {
   email: string
   hashed_password: string
   total_balance?: string
-  invoices?: InvoiceSchema[]
+  totalInvoices?: number
 }
 
 export type JwtSchema = {
@@ -34,6 +34,7 @@ type ItemList = {
   quantity: string
   price: string
   fkitemlistowner?: string
+  total?: int
 }
 
 export type InvoiceSchema = {
@@ -51,5 +52,5 @@ export type InvoiceSchema = {
   invoice_date: string
   status: string
   fkinvoiceowner: string
-  item_list?: ItemList[]
+  item_list?: ItemList[] | QueryResult<ItemList[]>
 }

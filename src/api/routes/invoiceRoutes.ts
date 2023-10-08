@@ -11,4 +11,6 @@ export default function invoiceRoutes(app: Express) {
     [bodyValidityChecker, jwtSignChecker],
     invoiceControllers.registerNewInvoiceController
   )
+
+  app.get("/invoice", [jwtSignChecker], invoiceControllers.getAllUserInvoices)
 }

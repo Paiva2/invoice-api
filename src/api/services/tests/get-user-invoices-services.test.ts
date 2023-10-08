@@ -4,12 +4,14 @@ import UserServicesMemory from "../../in-memory/users-services-memory"
 import RegisterNewInvoiceServices from "../invoice/registerNewInvoiceServices"
 import InvoiceServicesMemory from "../../in-memory/invoice-services-memory"
 import UserLoginServices from "../user/userLoginServices"
+import GetUserInvoicesServices from "../invoice/getUserInvoicesServices"
 
 let userRegisterServices: UserRegisterServices
 let userServicesMemory: UserServicesMemory
 let invoiceServicesMemory: InvoiceServicesMemory
 let userLoginServices: UserLoginServices
-let sut: RegisterNewInvoiceServices
+let registerNewInvoiceServices: RegisterNewInvoiceServices
+let sut: GetUserInvoicesServices
 
 const invoiceModel = {
   city_from: "city from",
@@ -39,32 +41,45 @@ const invoiceModel = {
   ],
 }
 
-describe("Register new invoice Services", () => {
+const secondInvoiceModel = {
+  ...invoiceModel,
+  email_to: "alternativeemail@email.com",
+  item_list: [
+    {
+      item_name: "any item",
+      price: "100",
+      quantity: "10",
+    },
+  ],
+}
+
+describe("Get user invoices services", () => {
   beforeEach(async () => {
     userServicesMemory = new UserServicesMemory()
     invoiceServicesMemory = new InvoiceServicesMemory()
 
     userRegisterServices = new UserRegisterServices(userServicesMemory)
     userLoginServices = new UserLoginServices(userServicesMemory)
-    sut = new RegisterNewInvoiceServices(
+
+    registerNewInvoiceServices = new RegisterNewInvoiceServices(
       invoiceServicesMemory,
       userServicesMemory
     )
+
+    sut = new GetUserInvoicesServices(invoiceServicesMemory)
 
     await userRegisterServices.execute({
       email: "test@test.com",
       username: "user test",
       password: "123456",
     })
-  })
 
-  it("should be possible to create a new invoice", async () => {
     const { findUser: authUser } = await userLoginServices.execute({
       email: "test@test.com",
       password: "123456",
     })
 
-    const { newInvoice } = await sut.execute({
+    await registerNewInvoiceServices.execute({
       email: "test@test.com",
       invoiceInfos: {
         ...invoiceModel,
@@ -72,70 +87,43 @@ describe("Register new invoice Services", () => {
       },
     })
 
-    expect(newInvoice).toEqual(
-      expect.objectContaining({
-        id: expect.any(String),
-        fkinvoiceowner: authUser.email,
-        status: "pending",
-        item_list: expect.arrayContaining([
-          {
-            item_name: "item 1",
-            price: "200",
-            quantity: "1",
-            fkitemlistowner: newInvoice.id,
-            total: 200,
-          },
-          {
-            item_name: "item 2",
-            price: "300",
-            quantity: "2",
-            fkitemlistowner: newInvoice.id,
-            total: 600,
-          },
-        ]),
-      })
-    )
+    await registerNewInvoiceServices.execute({
+      email: "test@test.com",
+      invoiceInfos: {
+        ...secondInvoiceModel,
+        fkinvoiceowner: authUser.email.toString(),
+      },
+    })
   })
 
-  it("should not be possible to create a new invoice if item list are empty", async () => {
-    const { findUser: authUser } = await userLoginServices.execute({
+  it("should be possible to get user invoices", async () => {
+    const { invoiceList } = await sut.execute({
       email: "test@test.com",
-      password: "123456",
     })
 
-    await expect(() => {
-      return sut.execute({
-        email: "test@test.com",
-        invoiceInfos: {
-          ...invoiceModel,
-          fkinvoiceowner: authUser.email.toString(),
-          item_list: [],
-        },
-      })
-    }).rejects.toThrowError(
-      "Invalid item list. An invoice should have at least one item."
-    )
+    expect(invoiceList).toHaveLength(2)
+    expect(invoiceList).toEqual([
+      expect.objectContaining({
+        email_to: "emailto@email.com",
+        item_list: [
+          expect.objectContaining({ item_name: "item 1", total: 200 }),
+          expect.objectContaining({ item_name: "item 2", total: 600 }),
+        ],
+      }),
+      expect.objectContaining({
+        email_to: "alternativeemail@email.com",
+        item_list: [
+          expect.objectContaining({ item_name: "any item", total: 1000 }),
+        ],
+      }),
+    ])
   })
 
-  it("should not be possible to create a new invoice if email profile are not provided", async () => {
+  it("should not be possible to get user invoices if email somehow are not provided", async () => {
     await expect(() => {
       return sut.execute({
         email: "",
-        invoiceInfos: {
-          ...invoiceModel,
-        },
       })
-    }).rejects.toThrowError("Invalid e-mail profile.")
-  })
-
-  it("should not be possible to create a new invoice if email profile are not on database", async () => {
-    await expect(() => {
-      return sut.execute({
-        email: "inexistent@inexistent.com.br",
-        invoiceInfos: {
-          ...invoiceModel,
-        },
-      })
-    }).rejects.toThrowError("User not found.")
+    }).rejects.toThrowError("Invalid e-mail.")
   })
 })

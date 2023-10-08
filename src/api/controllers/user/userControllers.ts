@@ -109,7 +109,8 @@ export default class UserControllers {
       const user = {
         email: findUserProfile.email,
         username: findUserProfile.username,
-        totaBalance: findUserProfile.total_balance,
+        total_balance: Number(findUserProfile.total_balance),
+        total_invoices: findUserProfile.totalInvoices,
       }
 
       return res.status(200).send({ data: user })
@@ -137,7 +138,12 @@ export default class UserControllers {
         total_balance,
       })
 
-      return res.status(200).send({ data: updatedUser })
+      return res.status(200).send({
+        data: {
+          ...updatedUser,
+          total_balance: Number(updatedUser.total_balance),
+        },
+      })
     } catch (e) {
       if (e instanceof Error) {
         return res.status(404).send({ message: e.message })

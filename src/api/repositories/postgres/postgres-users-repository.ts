@@ -1,5 +1,10 @@
 import { QueryResult } from "pg"
-import { User, NewUser, UpdateUserProfileSchema } from "../../../@types/types"
+import {
+  User,
+  NewUser,
+  UpdateUserProfileSchema,
+  InvoiceSchema,
+} from "../../../@types/types"
 import pool from "../../../pgclient"
 import { UserRepository } from "../implementations/user-repositories"
 
@@ -54,7 +59,15 @@ export default class PostgresUsersRepository implements UserRepository {
       [email]
     )
 
-    return findUser.rows[0]
+    const totalInvoices = await pool.query<InvoiceSchema[]>(
+      "SELECT * FROM invoice WHERE fkinvoiceowner = $1",
+      [email]
+    )
+
+    return {
+      ...findUser.rows[0],
+      totalInvoices: totalInvoices.rows.length,
+    }
   }
 
   async updatePassword(email: string, newPassword: string) {

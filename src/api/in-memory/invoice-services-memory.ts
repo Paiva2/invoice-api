@@ -6,6 +6,25 @@ export default class InvoiceServicesMemory implements InvoiceRepository {
   private invoices: InvoiceSchema[] = []
   private itemList: ItemList[] = []
 
+  async findUserInvoices(email: string) {
+    const filterUserInvoices = this.invoices.filter(
+      (invoice) => invoice.fkinvoiceowner === email
+    )
+
+    let formatUserInvoicesWithItemList: InvoiceSchema[] = []
+
+    for (let invoice of filterUserInvoices) {
+      formatUserInvoicesWithItemList.push({
+        ...invoice,
+        item_list: this.itemList.filter(
+          (list) => list.fkitemlistowner === invoice.id
+        ),
+      })
+    }
+
+    return formatUserInvoicesWithItemList
+  }
+
   async create(email: string, invoiceInfos: InvoiceSchema) {
     const {
       id,
@@ -44,6 +63,7 @@ export default class InvoiceServicesMemory implements InvoiceRepository {
     if (item_list) {
       for (let item of item_list) {
         item.fkitemlistowner = newInvoice.id
+        item.total = Number(item.price) * Number(item.quantity)
 
         this.itemList.push(item)
       }
