@@ -6,6 +6,44 @@ export default class InvoiceServicesMemory implements InvoiceRepository {
   private invoices: InvoiceSchema[] = []
   private itemList: ItemList[] = []
 
+  async findInvoiceById(invoiceId: string) {
+    const findInvoice = this.invoices.find(
+      (invoice) => invoice.id === invoiceId
+    )
+    const findInvoiceItemList = this.itemList.filter(
+      (item) => item.fkitemlistowner === invoiceId
+    )
+
+    if (!findInvoice) return null
+
+    const invoice = {
+      ...findInvoice,
+      item_list: findInvoiceItemList,
+    }
+
+    return invoice
+  }
+
+  async updateInvoiceStatus(newStatus: string, invoiceId: string) {
+    let updatedInvoice = {} as InvoiceSchema
+
+    const updateInvoices = this.invoices.map((invoice) => {
+      if (invoice.id === invoiceId) {
+        if (newStatus) {
+          invoice.status = newStatus
+        }
+
+        updatedInvoice = invoice
+      }
+
+      return invoice
+    })
+
+    this.invoices = updateInvoices
+
+    return updatedInvoice
+  }
+
   async findUserInvoices(email: string) {
     const filterUserInvoices = this.invoices.filter(
       (invoice) => invoice.fkinvoiceowner === email
@@ -56,7 +94,7 @@ export default class InvoiceServicesMemory implements InvoiceRepository {
       zipcode_to,
       country_to,
       invoice_date,
-      status,
+      status: status ? status : "pending",
       fkinvoiceowner: email,
     }
 

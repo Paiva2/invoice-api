@@ -4,6 +4,13 @@ import pool from "../../../pgclient"
 import { InvoiceRepository } from "../implementations/invoice-repositories"
 
 export default class PostgresInvoiceRepository implements InvoiceRepository {
+  async findInvoiceById(invoiceId: string) {
+    return null
+  }
+  async updateInvoiceStatus(status: string, invoiceId: string) {
+    return {} as InvoiceSchema
+  }
+
   async create(email: string, invoiceInfos: InvoiceSchema) {
     const {
       street_from,
@@ -18,6 +25,7 @@ export default class PostgresInvoiceRepository implements InvoiceRepository {
       country_to,
       invoice_date,
       item_list,
+      status,
     } = invoiceInfos
 
     await pool.query("BEGIN;")
@@ -54,7 +62,7 @@ export default class PostgresInvoiceRepository implements InvoiceRepository {
         zipcode_to,
         country_to,
         invoice_date,
-        "pending",
+        status ? status : "pending",
         email,
       ]
     )
