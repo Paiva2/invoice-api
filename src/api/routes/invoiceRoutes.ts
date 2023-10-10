@@ -3,6 +3,7 @@ import InvoiceControllers from "../controllers/invoice/invoiceControllers"
 import jwtSignChecker from "../middleware/jwtSignChecker"
 import bodySchemaChecker from "../middleware/bodySchemaChecker"
 import {
+  deleteUserInvoiceSchema,
   registerNewInvoiceSchema,
   updateInvoiceStatusSchema,
 } from "../schemas/invoice/invoiceSchemas"
@@ -26,5 +27,11 @@ export default function invoiceRoutes(app: Express) {
     "/invoice",
     [jwtSignChecker, bodySchemaChecker(updateInvoiceStatusSchema)],
     invoiceControllers.updateInvoiceStatusController
+  )
+
+  app.delete(
+    "/invoice",
+    [jwtSignChecker, bodySchemaChecker(deleteUserInvoiceSchema)],
+    invoiceControllers.deleteInvoiceController
   )
 }

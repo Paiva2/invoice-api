@@ -46,7 +46,8 @@ export default class DeleteInvoiceServices {
       return { deleteInvoice }
     } catch (e) {
       const error = e as Error
-      return error.message
+
+      throw new Error(error.message)
     }
   }
 }

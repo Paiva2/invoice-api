@@ -28,3 +28,7 @@ export const updateInvoiceStatusSchema = z.object({
   newStatus: z.enum(["paid", "pending", "draft"]),
   invoiceId: z.string().min(1),
 })
+
+export const deleteUserInvoiceSchema = z.object({
+  invoiceId: z.string().min(1),
+})

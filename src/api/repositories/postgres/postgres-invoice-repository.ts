@@ -4,6 +4,19 @@ import pool from "../../../pgclient"
 import { InvoiceRepository } from "../implementations/invoice-repositories"
 
 export default class PostgresInvoiceRepository implements InvoiceRepository {
+  async deleteUserInvoice(email: string, invoiceId: string) {
+    await pool.query<InvoiceSchema>(
+      `
+      DELETE FROM invoice WHERE id = $1 AND fkinvoiceowner = $2 RETURNING *
+    `,
+      [invoiceId, email]
+    )
+
+    const updatedInvoices = this.findUserInvoices(email)
+
+    return updatedInvoices
+  }
+
   async findInvoiceById(invoiceId: string) {
     const findInvoice = await pool.query<InvoiceSchema>(
       "SELECT * FROM invoice where id = $1",
