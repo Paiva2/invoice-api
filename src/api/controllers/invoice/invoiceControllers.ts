@@ -4,6 +4,7 @@ import PostgresUsersRepository from "../../repositories/postgres/postgres-users-
 import RegisterNewInvoiceServices from "../../services/invoice/registerNewInvoiceServices"
 import retrieveJwt from "../../utils/retrieveJwt"
 import GetUserInvoicesServices from "../../services/invoice/getUserInvoicesServices"
+import UpdateInvoiceStatusServices from "../../services/invoice/updateInvoiceStatusServices"
 
 const postgresInvoiceRepository = new PostgresInvoiceRepository()
 const postgresUsersRepository = new PostgresUsersRepository()
@@ -63,7 +64,7 @@ export default class InvoiceControllers {
     }
   }
 
-  async getAllUserInvoices(request: Request, response: Response) {
+  async getAllUserInvoicesController(request: Request, response: Response) {
     const getAuthToken = request.cookies["invoice-auth"]
 
     const getUserJwt = retrieveJwt(getAuthToken)
@@ -78,6 +79,31 @@ export default class InvoiceControllers {
       })
 
       return response.status(200).send({ data: invoiceList })
+    } catch (e) {
+      if (e instanceof Error) {
+        return response.status(403).send({ message: e.message })
+      }
+    }
+  }
+
+  async updateInvoiceStatusController(request: Request, response: Response) {
+    const { newStatus, invoiceId } = request.body
+    const getToken = request.cookies["invoice-auth"]
+    const getUserByToken = retrieveJwt(getToken)
+
+    const updateInvoiceStatusService = new UpdateInvoiceStatusServices(
+      postgresInvoiceRepository,
+      postgresUsersRepository
+    )
+
+    try {
+      await updateInvoiceStatusService.execute({
+        invoiceId,
+        newStatus,
+        userEmail: getUserByToken.email,
+      })
+
+      return response.status(200).send()
     } catch (e) {
       if (e instanceof Error) {
         return response.status(403).send({ message: e.message })

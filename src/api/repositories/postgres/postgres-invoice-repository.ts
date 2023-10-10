@@ -5,10 +5,30 @@ import { InvoiceRepository } from "../implementations/invoice-repositories"
 
 export default class PostgresInvoiceRepository implements InvoiceRepository {
   async findInvoiceById(invoiceId: string) {
-    return null
+    const findInvoice = await pool.query<InvoiceSchema>(
+      "SELECT * FROM invoice where id = $1",
+      [invoiceId]
+    )
+
+    const findInvoicesItemList = await pool.query<ItemList>(
+      "SELECT * from item_list WHERE fkitemlistowner = $1",
+      [findInvoice.rows[0].id]
+    )
+
+    const invoiceFormatted = {
+      ...findInvoice.rows[0],
+      item_list: findInvoicesItemList.rows,
+    }
+
+    return invoiceFormatted
   }
   async updateInvoiceStatus(status: string, invoiceId: string) {
-    return {} as InvoiceSchema
+    const updatedInvoice = await pool.query<InvoiceSchema>(
+      "UPDATE invoice SET status = $1 WHERE id = $2 RETURNING *",
+      [status, invoiceId]
+    )
+
+    return updatedInvoice.rows[0]
   }
 
   async create(email: string, invoiceInfos: InvoiceSchema) {

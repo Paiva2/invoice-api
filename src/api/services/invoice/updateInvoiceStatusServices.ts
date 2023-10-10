@@ -55,18 +55,18 @@ export default class UpdateInvoiceStatusServices {
 
       if (!getUserInformations.total_balance) return { updatedInvoice }
 
-      const getInvoiceTotalValue = checkIfInvoiceExists.item_list.reduce(
-        (acc: number, invoice: ItemList) => {
-          return (acc += invoice.total)
-        },
-        0
-      )
+      const getInvoiceTotalValue: number =
+        checkIfInvoiceExists.item_list.reduce(
+          (acc: number, invoice: ItemList) => {
+            return (acc += Number(invoice.total))
+          },
+          0
+        )
 
       await this.userRepository.updateUserProfileInformations({
         email: userEmail,
         total_balance: String(
-          Number(getUserInformations.total_balance) -
-            Number(getInvoiceTotalValue)
+          Number(getUserInformations.total_balance) - getInvoiceTotalValue
         ),
       })
     }
