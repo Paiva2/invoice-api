@@ -191,4 +191,28 @@ describe("Update invoice status services", () => {
       })
     }).rejects.toThrowError("Invoice not found.")
   })
+
+  it("should not be possible to update invoice status to paid if that invoice is already paid.", async () => {
+    const { newInvoice } = await registerNewInvoiceServices.execute({
+      email: "test@test.com",
+      invoiceInfos: {
+        ...invoiceModel,
+        fkinvoiceowner: "test@test.com",
+      },
+    })
+
+    await sut.execute({
+      invoiceId: newInvoice.id as string,
+      newStatus: "paid",
+      userEmail: "test@test.com",
+    })
+
+    await expect(() => {
+      return sut.execute({
+        invoiceId: newInvoice.id as string,
+        newStatus: "paid",
+        userEmail: "test@test.com",
+      })
+    }).rejects.toThrowError("This invoice is already paid.")
+  })
 })

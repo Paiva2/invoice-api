@@ -43,6 +43,10 @@ export default class UpdateInvoiceStatusServices {
       throw new Error("Invoice not found.")
     }
 
+    if (checkIfInvoiceExists.status === "paid" && newStatus === "paid") {
+      throw new Error("This invoice is already paid.")
+    }
+
     const updatedInvoice = await this.invoiceRepository.updateInvoiceStatus(
       newStatus,
       invoiceId
