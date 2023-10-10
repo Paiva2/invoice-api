@@ -6,6 +6,29 @@ export default class InvoiceServicesMemory implements InvoiceRepository {
   private invoices: InvoiceSchema[] = []
   private itemList: ItemList[] = []
 
+  async deleteUserInvoice(email: string, invoiceId: string) {
+    const checkIfInvoiceIsValid = this.invoices.some((invoice) => {
+      return invoice.id === invoiceId && invoice.fkinvoiceowner === email
+    })
+
+    if (!checkIfInvoiceIsValid) {
+      throw new Error("Invalid invoice or e-mail.")
+    }
+
+    const updatedInvoiceList = this.invoices.filter((invoice) => {
+      return invoice.id !== invoiceId && invoice.fkinvoiceowner === email
+    })
+
+    const updateItemList = this.itemList.filter((itemList) => {
+      return itemList.fkitemlistowner !== invoiceId
+    })
+
+    this.invoices = updatedInvoiceList
+    this.itemList = updateItemList
+
+    return this.invoices
+  }
+
   async findInvoiceById(invoiceId: string) {
     const findInvoice = this.invoices.find(
       (invoice) => invoice.id === invoiceId
