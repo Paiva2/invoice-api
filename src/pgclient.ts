@@ -43,7 +43,7 @@ async function initDatabase() {
         country_to varchar(50),
         invoice_date varchar(30),
         fkInvoiceOwner varchar(100) not null,
-        foreign key(fkInvoiceOwner) references users(email)
+        foreign key(fkInvoiceOwner) references users(email) ON DELETE CASCADE
       )
   `)
 
@@ -56,7 +56,7 @@ async function initDatabase() {
         quantity bigint,
         price bigint,
         total numeric GENERATED ALWAYS AS (quantity * price) STORED,
-        foreign key(fkItemListOwner) references invoice(id)
+        foreign key(fkItemListOwner) references invoice(id) ON DELETE CASCADE
       )
   `)
 

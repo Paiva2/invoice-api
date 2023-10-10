@@ -1,14 +1,18 @@
 import { Express } from "express"
 import InvoiceControllers from "../controllers/invoice/invoiceControllers"
-import bodyValidityChecker from "../middleware/bodyValidityChecker"
 import jwtSignChecker from "../middleware/jwtSignChecker"
+import bodySchemaChecker from "../middleware/bodySchemaChecker"
+import {
+  registerNewInvoiceSchema,
+  updateInvoiceStatusSchema,
+} from "../schemas/invoice/invoiceSchemas"
 
 const invoiceControllers = new InvoiceControllers()
 
 export default function invoiceRoutes(app: Express) {
   app.post(
     "/invoice",
-    [bodyValidityChecker, jwtSignChecker],
+    [jwtSignChecker, bodySchemaChecker(registerNewInvoiceSchema)],
     invoiceControllers.registerNewInvoiceController
   )
 
@@ -20,7 +24,7 @@ export default function invoiceRoutes(app: Express) {
 
   app.patch(
     "/invoice",
-    [jwtSignChecker, bodyValidityChecker],
+    [jwtSignChecker, bodySchemaChecker(updateInvoiceStatusSchema)],
     invoiceControllers.updateInvoiceStatusController
   )
 }

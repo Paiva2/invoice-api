@@ -59,6 +59,8 @@ export default class PostgresUsersRepository implements UserRepository {
       [email]
     )
 
+    if (!findUser.rows[0]) return null
+
     const totalInvoices = await pool.query<InvoiceSchema[]>(
       "SELECT * FROM invoice WHERE fkinvoiceowner = $1",
       [email]

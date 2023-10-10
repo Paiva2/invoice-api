@@ -13,8 +13,9 @@ export default function jwtSignChecker(
   try {
     const isTokenValid = jwt.verify(getJwt, env.JWT_KEY as string) as JwtSchema
 
-    if (!isTokenValid)
+    if (!isTokenValid) {
       return response.status(403).send({ message: "Invalid token." })
+    }
 
     return next()
   } catch (e) {

@@ -1,22 +1,32 @@
 import { Express } from "express"
 import UserControllers from "../controllers/user/userControllers"
 import jwtSignChecker from "../middleware/jwtSignChecker"
-import bodyValidityChecker from "../middleware/bodyValidityChecker"
+import {
+  updateUserProfileSchema,
+  userChangePasswordSchema,
+  userLoginSchema,
+  userRegisterSchema,
+} from "../schemas/user/userSchemas"
+import bodySchemaChecker from "../middleware/bodySchemaChecker"
 
 const userControllers = new UserControllers()
 
 export default function userRoutes(app: Express) {
   app.post(
     "/user-register",
-    bodyValidityChecker,
+    [bodySchemaChecker(userRegisterSchema)],
     userControllers.userRegisterController
   )
 
-  app.post("/login", bodyValidityChecker, userControllers.userLoginController)
+  app.post(
+    "/login",
+    [bodySchemaChecker(userLoginSchema)],
+    userControllers.userLoginController
+  )
 
   app.patch(
     "/change-credentials",
-    bodyValidityChecker,
+    [bodySchemaChecker(userChangePasswordSchema)],
     userControllers.userChangePasswordController
   )
 
@@ -24,7 +34,7 @@ export default function userRoutes(app: Express) {
 
   app.patch(
     "/profile",
-    [jwtSignChecker, bodyValidityChecker],
+    [jwtSignChecker, bodySchemaChecker(updateUserProfileSchema)],
     userControllers.updateUserProfileController
   )
 }
