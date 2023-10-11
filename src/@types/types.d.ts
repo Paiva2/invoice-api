@@ -30,6 +30,7 @@ export type UpdateUserProfileSchema = {
 }
 
 type ItemList = {
+  id?: string
   item_name: string
   quantity: string
   price: string

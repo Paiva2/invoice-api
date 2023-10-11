@@ -6,6 +6,65 @@ export default class InvoiceServicesMemory implements InvoiceRepository {
   private invoices: InvoiceSchema[] = []
   private itemList: ItemList[] = []
 
+  async updateInvoiceInformations(
+    email: string,
+    invoiceId: string,
+    newData: InvoiceSchema
+  ) {
+    this.itemList = this.itemList.filter(
+      (item) => item.fkitemlistowner !== invoiceId
+    )
+
+    for (let list of newData.item_list) {
+      await this.createItemListForInvoice(invoiceId, [list], list.id)
+    }
+
+    const updateInvoice = this.invoices.map((invoice) => {
+      if (invoice.id === invoiceId && invoice.fkinvoiceowner === email) {
+        invoice = {
+          ...newData,
+          id: invoiceId,
+          fkinvoiceowner: email,
+        }
+      }
+
+      return invoice
+    })
+
+    this.invoices = updateInvoice
+
+    const getItemListOfThisInvoice = await this.findInvoiceItemList(invoiceId)
+
+    const getInvoiceUpdated = this.invoices.find(
+      (invoice) => invoice.id === invoiceId
+    ) as InvoiceSchema
+
+    return {
+      ...getInvoiceUpdated,
+      item_list: getItemListOfThisInvoice,
+    }
+  }
+
+  async createItemListForInvoice(
+    invoiceId: string,
+    newItemList: ItemList[],
+    itemListId?: string
+  ) {
+    for (let item of newItemList) {
+      item.id = itemListId ? itemListId : randomUUID()
+      item.fkitemlistowner = invoiceId
+      item.total = Number(item.price) * Number(item.quantity)
+
+      this.itemList.push(item)
+    }
+  }
+
+  async findInvoiceItemList(invoiceId: string) {
+    return this.itemList.filter((item) => {
+      return item.fkitemlistowner === invoiceId
+    })
+  }
+
   async deleteUserInvoice(email: string, invoiceId: string) {
     const checkIfInvoiceIsValid = this.invoices.some((invoice) => {
       return invoice.id === invoiceId && invoice.fkinvoiceowner === email
@@ -121,14 +180,7 @@ export default class InvoiceServicesMemory implements InvoiceRepository {
       fkinvoiceowner: email,
     }
 
-    if (item_list) {
-      for (let item of item_list) {
-        item.fkitemlistowner = newInvoice.id
-        item.total = Number(item.price) * Number(item.quantity)
-
-        this.itemList.push(item)
-      }
-    }
+    await this.createItemListForInvoice(newInvoice.id, item_list)
 
     this.invoices.push(newInvoice)
 

@@ -79,6 +79,7 @@ describe("Register new invoice Services", () => {
         status: "pending",
         item_list: expect.arrayContaining([
           {
+            id: expect.any(String),
             item_name: "item 1",
             price: "200",
             quantity: "1",
@@ -86,6 +87,7 @@ describe("Register new invoice Services", () => {
             total: 200,
           },
           {
+            id: expect.any(String),
             item_name: "item 2",
             price: "300",
             quantity: "2",
