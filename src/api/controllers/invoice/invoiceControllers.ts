@@ -6,6 +6,7 @@ import retrieveJwt from "../../utils/retrieveJwt"
 import GetUserInvoicesServices from "../../services/invoice/getUserInvoicesServices"
 import UpdateInvoiceStatusServices from "../../services/invoice/updateInvoiceStatusServices"
 import DeleteInvoiceServices from "../../services/invoice/deleteInvoiceServices"
+import EditInvoiceServices from "../../services/invoice/EditInvoiceServices"
 
 const postgresInvoiceRepository = new PostgresInvoiceRepository()
 const postgresUsersRepository = new PostgresUsersRepository()
@@ -125,6 +126,33 @@ export default class InvoiceControllers {
       await deleteInvoiceServices.execute({
         email: getUserEmail.email,
         invoiceId,
+      })
+
+      return response.status(200).send()
+    } catch (e) {
+      if (e instanceof Error) {
+        return response.status(403).send({ message: e.message })
+      }
+    }
+  }
+
+  async updateInvoiceInformationsController(
+    request: Request,
+    response: Response
+  ) {
+    const { invoiceId } = request.body
+    const getToken = request.cookies["invoice-auth"]
+    const getUserEmail = retrieveJwt(getToken)
+
+    const editInvoiceServices = new EditInvoiceServices(
+      postgresInvoiceRepository
+    )
+
+    try {
+      await editInvoiceServices.execute({
+        invoiceId,
+        newData: request.body,
+        userEmail: getUserEmail.email,
       })
 
       return response.status(200).send()

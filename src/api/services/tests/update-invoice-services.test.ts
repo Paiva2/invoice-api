@@ -4,14 +4,12 @@ import UserServicesMemory from "../../in-memory/users-services-memory"
 import RegisterNewInvoiceServices from "../invoice/registerNewInvoiceServices"
 import InvoiceServicesMemory from "../../in-memory/invoice-services-memory"
 import EditInvoiceServices from "../invoice/EditInvoiceServices"
-import { randomUUID } from "node:crypto"
 
 let userRegisterServices: UserRegisterServices
 let userServicesMemory: UserServicesMemory
 let invoiceServicesMemory: InvoiceServicesMemory
 let registerNewInvoiceServices: RegisterNewInvoiceServices
 let sut: EditInvoiceServices
-let newInvoiceId = ""
 
 const invoiceModel = {
   city_from: "city from",
@@ -135,15 +133,20 @@ describe("Update invoice services", () => {
             price: "10000",
             quantity: "2",
             fkitemlistowner: newInvoice.id!,
-            total: 20000,
           },
           {
-            id: "4",
+            id: "10",
             item_name: "new item again 2",
             price: "4000",
             quantity: "2",
             fkitemlistowner: newInvoice.id!,
-            total: 8000,
+          },
+          {
+            id: expect.any(String),
+            item_name: "new item again 3",
+            price: "5000",
+            quantity: "2",
+            fkitemlistowner: newInvoice.id!,
           },
         ],
       },
@@ -165,12 +168,20 @@ describe("Update invoice services", () => {
             total: 20000,
           },
           {
-            id: "4",
+            id: "10",
             item_name: "new item again 2",
             price: "4000",
             quantity: "2",
             fkitemlistowner: newInvoice.id!,
             total: 8000,
+          },
+          {
+            id: expect.any(String),
+            item_name: "new item again 3",
+            price: "5000",
+            quantity: "2",
+            fkitemlistowner: newInvoice.id!,
+            total: 10000,
           },
         ],
       })

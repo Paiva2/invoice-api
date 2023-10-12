@@ -9,7 +9,7 @@ interface DeleteInvoiceServicesRequest {
 type DeleteInvoiceResponseError = string
 
 interface DeleteInvoiceServicesResponse {
-  deleteInvoice: InvoiceSchema[] | Error
+  deleteInvoice: InvoiceSchema[] | Error | void
 }
 
 export default class DeleteInvoiceServices {

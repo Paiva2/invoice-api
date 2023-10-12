@@ -32,3 +32,26 @@ export const updateInvoiceStatusSchema = z.object({
 export const deleteUserInvoiceSchema = z.object({
   invoiceId: z.string().min(1),
 })
+
+export const updateInvoiceSchema = z.object({
+  invoiceId: z.string().min(6, { message: "Invalid invoice id." }),
+  city_from: z.string(),
+  country_from: z.string(),
+  street_from: z.string(),
+  zipcode_from: z.string(),
+  city_to: z.string(),
+  country_to: z.string(),
+  email_to: z.string(),
+  name_to: z.string(),
+  street_to: z.string(),
+  zipcode_to: z.string(),
+  invoice_date: z.string(),
+  item_list: z.array(
+    z.object({
+      id: z.string().nullable(),
+      item_name: z.string(),
+      quantity: z.string(),
+      price: z.string(),
+    })
+  ),
+})

@@ -6,57 +6,16 @@ export default class InvoiceServicesMemory implements InvoiceRepository {
   private invoices: InvoiceSchema[] = []
   private itemList: ItemList[] = []
 
-  async updateInvoiceInformations(
+  createItemListForInvoice(invoiceId: string, newItemList: ItemList[]) {}
+
+  updateInvoiceInformations(
     email: string,
     invoiceId: string,
     newData: InvoiceSchema
   ) {
-    this.itemList = this.itemList.filter(
-      (item) => item.fkitemlistowner !== invoiceId
+    const getCurrentInvoiceState = this.invoices.find(
+      (invoice) => invoice.id === invoiceId && invoice.fkinvoiceowner === email
     )
-
-    for (let list of newData.item_list) {
-      await this.createItemListForInvoice(invoiceId, [list], list.id)
-    }
-
-    const updateInvoice = this.invoices.map((invoice) => {
-      if (invoice.id === invoiceId && invoice.fkinvoiceowner === email) {
-        invoice = {
-          ...newData,
-          id: invoiceId,
-          fkinvoiceowner: email,
-        }
-      }
-
-      return invoice
-    })
-
-    this.invoices = updateInvoice
-
-    const getItemListOfThisInvoice = await this.findInvoiceItemList(invoiceId)
-
-    const getInvoiceUpdated = this.invoices.find(
-      (invoice) => invoice.id === invoiceId
-    ) as InvoiceSchema
-
-    return {
-      ...getInvoiceUpdated,
-      item_list: getItemListOfThisInvoice,
-    }
-  }
-
-  async createItemListForInvoice(
-    invoiceId: string,
-    newItemList: ItemList[],
-    itemListId?: string
-  ) {
-    for (let item of newItemList) {
-      item.id = itemListId ? itemListId : randomUUID()
-      item.fkitemlistowner = invoiceId
-      item.total = Number(item.price) * Number(item.quantity)
-
-      this.itemList.push(item)
-    }
   }
 
   async findInvoiceItemList(invoiceId: string) {
@@ -92,6 +51,7 @@ export default class InvoiceServicesMemory implements InvoiceRepository {
     const findInvoice = this.invoices.find(
       (invoice) => invoice.id === invoiceId
     )
+
     const findInvoiceItemList = this.itemList.filter(
       (item) => item.fkitemlistowner === invoiceId
     )
@@ -180,13 +140,16 @@ export default class InvoiceServicesMemory implements InvoiceRepository {
       fkinvoiceowner: email,
     }
 
-    await this.createItemListForInvoice(newInvoice.id, item_list)
+    const updateInvoiceItemList = await this.createItemListForInvoice(
+      newInvoice.id,
+      item_list
+    )
 
     this.invoices.push(newInvoice)
 
     return {
       ...newInvoice,
-      item_list,
+      item_list: updateInvoiceItemList,
     }
   }
 }

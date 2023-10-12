@@ -29,7 +29,7 @@ async function initDatabase() {
 
     await pool.query(`
       CREATE TABLE IF NOT EXISTS invoice(
-        id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+        id varchar(100) DEFAULT gen_random_uuid() PRIMARY KEY,
         street_from varchar(100),
         city_from varchar(50),
         zipcode_from varchar(30),
@@ -51,7 +51,7 @@ async function initDatabase() {
       CREATE TABLE IF NOT EXISTS 
       item_list(
         id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
-        fkItemListOwner uuid not null,
+        fkItemListOwner varchar(100) not null,
         item_name varchar(100),
         quantity bigint,
         price bigint,

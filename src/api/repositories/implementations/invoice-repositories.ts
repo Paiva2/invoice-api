@@ -6,7 +6,7 @@ export interface InvoiceRepository {
   deleteUserInvoice(
     email: string,
     invoiceId: string
-  ): Promise<InvoiceSchema[] | Error>
+  ): Promise<InvoiceSchema[] | Error> | Promise<void>
   updateInvoiceStatus(status: string, invoiceId: string): Promise<InvoiceSchema>
   findInvoiceById(invoiceId: string): Promise<InvoiceSchema | null>
   updateInvoiceInformations(
@@ -14,6 +14,9 @@ export interface InvoiceRepository {
     invoiceId: string,
     newData: InvoiceSchema
   ): Promise<InvoiceSchema>
-  createItemListForInvoice(invoiceId: string, newItemList: ItemList[]): void
+  createItemListForInvoice(
+    invoiceId: string,
+    newItemList: ItemList[]
+  ): void | Promise<ItemList[]>
   findInvoiceItemList(invoiceId: string): Promise<ItemList[]>
 }

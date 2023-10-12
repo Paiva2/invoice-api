@@ -34,4 +34,10 @@ export default function invoiceRoutes(app: Express) {
     [jwtSignChecker, bodySchemaChecker(deleteUserInvoiceSchema)],
     invoiceControllers.deleteInvoiceController
   )
+
+  app.patch(
+    "/update-invoice",
+    [jwtSignChecker],
+    invoiceControllers.updateInvoiceInformationsController
+  )
 }
