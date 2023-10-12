@@ -1,9 +1,9 @@
-import { describe, it, expect, beforeEach } from "vitest"
-import UserRegisterServices from "../user/userRegisterServices"
+import { beforeEach, describe, expect, it } from "vitest"
+import InvoiceServicesMemory from "../../in-memory/invoice-services-memory"
 import UserServicesMemory from "../../in-memory/users-services-memory"
 import RegisterNewInvoiceServices from "../invoice/registerNewInvoiceServices"
-import InvoiceServicesMemory from "../../in-memory/invoice-services-memory"
 import UserLoginServices from "../user/userLoginServices"
+import UserRegisterServices from "../user/userRegisterServices"
 
 let userRegisterServices: UserRegisterServices
 let userServicesMemory: UserServicesMemory
@@ -33,8 +33,8 @@ const invoiceModel = {
     },
     {
       item_name: "item 2",
-      price: "300",
-      quantity: "2",
+      price: "400",
+      quantity: "1",
     },
   ],
 }
@@ -74,6 +74,7 @@ describe("Register new invoice Services", () => {
 
     expect(newInvoice).toEqual(
       expect.objectContaining({
+        ...invoiceModel,
         id: expect.any(String),
         fkinvoiceowner: authUser.email,
         status: "pending",
@@ -89,10 +90,10 @@ describe("Register new invoice Services", () => {
           {
             id: expect.any(String),
             item_name: "item 2",
-            price: "300",
-            quantity: "2",
+            price: "400",
+            quantity: "1",
             fkitemlistowner: newInvoice.id,
-            total: 600,
+            total: 400,
           },
         ]),
       })

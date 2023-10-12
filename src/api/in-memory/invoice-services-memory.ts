@@ -1,21 +1,104 @@
 import { InvoiceSchema, ItemList } from "../../@types/types"
 import { InvoiceRepository } from "../repositories/implementations/invoice-repositories"
 import { randomUUID } from "node:crypto"
+import { generateRandomID } from "../utils/generateInvoiceId"
 
 export default class InvoiceServicesMemory implements InvoiceRepository {
   private invoices: InvoiceSchema[] = []
   private itemList: ItemList[] = []
 
-  createItemListForInvoice(invoiceId: string, newItemList: ItemList[]) {}
+  async createItemListForInvoice(invoiceId: string, newItemList: ItemList[]) {
+    const itensToKeep: string[] = []
 
-  updateInvoiceInformations(
+    for (let item of newItemList) {
+      if (item.id) {
+        this.itemList = this.itemList.map((foundItem) => {
+          if (foundItem.id === item.id) {
+            const itemTotal = Number(item.price) * Number(item.quantity)
+
+            const editItem = {
+              ...item,
+              fkitemlistowner: invoiceId,
+              total: item.total || itemTotal,
+            }
+
+            foundItem = editItem
+          }
+
+          return foundItem
+        })
+
+        itensToKeep.push(item.id)
+      } else {
+        const createANewItem = {
+          ...item,
+          id: randomUUID(),
+          fkitemlistowner: invoiceId,
+          total: Number(item.price) * Number(item.quantity),
+        }
+
+        itensToKeep.push(createANewItem.id)
+        this.itemList.push(createANewItem)
+      }
+    }
+
+    this.itemList.forEach((item) => {
+      if (
+        !itensToKeep.includes(item.id!) &&
+        item.fkitemlistowner === invoiceId
+      ) {
+        this.itemList = this.itemList.filter(
+          (currentItem) => currentItem.id !== item.id
+        )
+      }
+    })
+
+    const getItemListOfThisInvoice = this.itemList.filter(
+      (itens) => itens.fkitemlistowner === invoiceId
+    )
+
+    return getItemListOfThisInvoice
+  }
+
+  async updateInvoiceInformations(
     email: string,
     invoiceId: string,
     newData: InvoiceSchema
   ) {
-    const getCurrentInvoiceState = this.invoices.find(
+    let invoiceToUpdate = this.invoices.find(
       (invoice) => invoice.id === invoiceId && invoice.fkinvoiceowner === email
+    ) as InvoiceSchema
+
+    const fieldsToUpdate = Object.keys(newData)
+    const fieldsToNotUpdate = ["item_list", "invoiceId", "fkinvoiceowner", "id"]
+
+    for (let field of fieldsToUpdate) {
+      if (!fieldsToNotUpdate.includes(field)) {
+        invoiceToUpdate = {
+          ...invoiceToUpdate,
+          [field]: newData[field as keyof typeof newData],
+        }
+      }
+    }
+
+    this.invoices = this.invoices.map((invoice) => {
+      if (invoice.id === invoiceId && invoice.fkinvoiceowner === email) {
+        invoice = invoiceToUpdate
+      }
+
+      return invoice
+    })
+
+    const getInvoiceUpdated = this.invoices.find(
+      (invoice) => invoice.id === invoiceId && invoice.fkinvoiceowner === email
+    ) as InvoiceSchema
+
+    const updateInvoiceItemList = await this.createItemListForInvoice(
+      invoiceId,
+      newData.item_list
     )
+
+    return { ...getInvoiceUpdated, item_list: updateInvoiceItemList }
   }
 
   async findInvoiceItemList(invoiceId: string) {
@@ -52,11 +135,11 @@ export default class InvoiceServicesMemory implements InvoiceRepository {
       (invoice) => invoice.id === invoiceId
     )
 
+    if (!findInvoice) return null
+
     const findInvoiceItemList = this.itemList.filter(
       (item) => item.fkitemlistowner === invoiceId
     )
-
-    if (!findInvoice) return null
 
     const invoice = {
       ...findInvoice,
@@ -124,7 +207,7 @@ export default class InvoiceServicesMemory implements InvoiceRepository {
     } = invoiceInfos
 
     const newInvoice = {
-      id: id ? id : randomUUID(),
+      id: id ? id : generateRandomID(),
       street_from,
       city_from,
       zipcode_from,

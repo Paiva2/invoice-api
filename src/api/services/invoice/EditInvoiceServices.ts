@@ -23,17 +23,17 @@ export default class EditInvoiceServices {
       throw new Error("Invalid user e-mail.")
     } else if (!invoiceId) {
       throw new Error("Invalid invoice id.")
-    } else if (!newData) {
+    } else if (!newData || !Object.keys(newData).length) {
       throw new Error("Invalid invoice informations.")
     }
 
     const checkIfUserHasThisInvoice =
       await this.invoiceRepository.findInvoiceById(invoiceId)
 
-    if (checkIfUserHasThisInvoice?.fkinvoiceowner !== userEmail) {
-      throw new Error("Invalid invoice id.")
-    } else if (!checkIfUserHasThisInvoice) {
+    if (!checkIfUserHasThisInvoice) {
       throw new Error("Invoice not found.")
+    } else if (checkIfUserHasThisInvoice?.fkinvoiceowner !== userEmail) {
+      throw new Error("Invalid invoice id.")
     }
 
     const editedInvoice =
