@@ -23,6 +23,8 @@ export default class DeleteInvoiceServices {
   > {
     if (!invoiceId) {
       throw new Error("Invalid invoice id.")
+    } else if (!email) {
+      throw new Error("Invalid e-mail.")
     }
 
     const checkIfInvoiceExists = await this.invoiceRepository.findInvoiceById(
@@ -31,10 +33,8 @@ export default class DeleteInvoiceServices {
 
     if (!checkIfInvoiceExists) {
       throw new Error("Invalid invoice id.")
-    }
-
-    if (!email) {
-      throw new Error("Invalid e-mail.")
+    } else if (checkIfInvoiceExists.fkinvoiceowner !== email) {
+      throw new Error("Not allowed.")
     }
 
     try {

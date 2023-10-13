@@ -43,6 +43,10 @@ export default class UpdateInvoiceStatusServices {
       throw new Error("Invoice not found.")
     }
 
+    if (checkIfInvoiceExists.fkinvoiceowner !== userEmail) {
+      throw new Error("Not allowed.")
+    }
+
     if (checkIfInvoiceExists.status === "paid" && newStatus === "paid") {
       throw new Error("This invoice is already paid.")
     }

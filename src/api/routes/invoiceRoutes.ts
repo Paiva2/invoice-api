@@ -5,6 +5,7 @@ import bodySchemaChecker from "../middleware/bodySchemaChecker"
 import {
   deleteUserInvoiceSchema,
   registerNewInvoiceSchema,
+  updateInvoiceSchema,
   updateInvoiceStatusSchema,
 } from "../schemas/invoice/invoiceSchemas"
 
@@ -37,7 +38,7 @@ export default function invoiceRoutes(app: Express) {
 
   app.patch(
     "/update-invoice",
-    [jwtSignChecker],
+    [jwtSignChecker, bodySchemaChecker(updateInvoiceSchema)],
     invoiceControllers.updateInvoiceInformationsController
   )
 }

@@ -86,6 +86,15 @@ describe("Delete invoice services", () => {
     expect(checkIfInvoiceExistsAfterDelete).toBe(null)
   })
 
+  it("should not be possible to delete an invoice if user dont own this invoice", async () => {
+    await expect(() => {
+      return sut.execute({
+        email: "differentemail@differentemail.com",
+        invoiceId: newInvoiceId!,
+      })
+    }).rejects.toThrowError("Not allowed.")
+  })
+
   it("should not be possible to delete an invoice if email are not provided", async () => {
     await expect(() => {
       return sut.execute({

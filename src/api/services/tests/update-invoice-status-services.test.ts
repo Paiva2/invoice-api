@@ -215,4 +215,22 @@ describe("Update invoice status services", () => {
       })
     }).rejects.toThrowError("This invoice is already paid.")
   })
+
+  it("should not be possible to update invoice status to paid if user dont own that invoice.", async () => {
+    const { newInvoice } = await registerNewInvoiceServices.execute({
+      email: "test@test.com",
+      invoiceInfos: {
+        ...invoiceModel,
+        fkinvoiceowner: "test@test.com",
+      },
+    })
+
+    await expect(() => {
+      return sut.execute({
+        invoiceId: newInvoice.id as string,
+        newStatus: "paid",
+        userEmail: "differentemail@differentemail.com",
+      })
+    }).rejects.toThrowError("Not allowed.")
+  })
 })
