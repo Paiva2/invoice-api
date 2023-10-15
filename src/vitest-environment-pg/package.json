@@ -1,9 +1,0 @@
-{
-  "name": "vitest-environment-pg",
-  "version": "1.0.0",
-  "description": "",
-  "main": "pg-test-environment.ts",
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
-}

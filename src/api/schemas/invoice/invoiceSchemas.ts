@@ -11,8 +11,8 @@ export const registerNewInvoiceSchema = z.object({
   name_to: z.string().min(1),
   street_to: z.string().min(1),
   zipcode_to: z.string().min(1),
-  invoice_date: z.string().min(1),
-  status: z.enum(["pending", "draft"]),
+  invoice_date: z.string().min(1).optional(),
+  status: z.enum(["pending", "draft"]).optional(),
   item_list: z
     .array(
       z.object({

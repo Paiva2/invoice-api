@@ -7,12 +7,7 @@
     "dev": "npx nodemon",
     "build": "yarn tsc",
     "test": "vitest run --dir src/api/services/tests",
-    "test:watch": "vitest --dir src/api/services/tests",
-    "test:create-compose-test": "concurrently \"cd ./src/vitest-environment-pg && docker-compose up -d\"",
-    "test:create-pg-environment": "npm link cd src cd vitest-environment-pg",
-    "test:install-pg-environment": "npm link vitest-environment-pg",
-    "pretest:e2e": "run-s test:create-compose-test test:create-pg-environment test:install-pg-environment",
-    "test:e2e": "vitest run --dir src/api/controllers/tests"
+    "test:watch": "vitest --dir src/api/services/tests"
   },
   "keywords": [],
   "author": "",

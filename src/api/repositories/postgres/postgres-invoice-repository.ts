@@ -193,7 +193,7 @@ export default class PostgresInvoiceRepository implements InvoiceRepository {
         city_to,
         zipcode_to,
         country_to,
-        invoice_date,
+        invoice_date ?? new Date(),
         status ? status : "pending",
         email,
         generateRandomID(),

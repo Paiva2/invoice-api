@@ -63,7 +63,8 @@ async function initDatabase() {
     await pool.query("COMMIT;")
 
     await pool.query("END;")
-  } catch {
+  } catch (e) {
+    console.log(e)
     throw new Error("Error while generating database.")
   }
 }
