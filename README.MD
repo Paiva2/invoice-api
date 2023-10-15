@@ -34,7 +34,7 @@ $ cd invoice-api
 
 $ npm install
 
-$ .env environment configuration
+.env environment configuration
 
 $ docker compose up
 
